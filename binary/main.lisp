@@ -1,5 +1,9 @@
 (in-package :io.github.lionell.binary)
 
+(defmacro with-gensyms ((&rest names) &body body)
+  `(let ,(loop for n in names collect `(,n (gensym)))
+     ,@body))
+
 (defgeneric read-value (type stream &key)
   (:documentation "Read a value of the given type from the stream."))
 
@@ -53,9 +57,7 @@
                    ,object-var)))
 
 (defmacro define-binary-class (name slots)
-  (let ((name (eval name))
-        (slots (eval slots)))
-    `(progn
-       ,(define-class name slots)
-       ,(define-read-value name slots)
-       ,(define-write-value name slots))))
+  `(progn
+     ,(define-class name slots)
+     ,(define-read-value name slots)
+     ,(define-write-value name slots)))
